@@ -2,7 +2,7 @@ name: Generate Pacman Contribution Graph
 
 on:
   schedule:
-    - cron: '0 0 * * *' # todos los días a medianoche UTC
+    - cron: '0 0 * * *' # todos los días
   workflow_dispatch:
 
 jobs:
@@ -13,16 +13,24 @@ jobs:
         uses: yoshi389111/github-pacman-graph@main
         with:
           username: moyeta-tech
-          color_snake: '#facc15'         # color del pacman (amarillo)
-          color_dots: '#d4d4d8'          # color de los puntitos
-          color_blank: '#1e293b'         # color de fondo (oscuro)
-          color_background: '#0f172a'    # color fondo total (oscuro)
-          gif: false                     # true si querés gif, false si solo svg
+          color_snake: '#facc15'
+          color_dots: '#d4d4d8'
+          color_blank: '#1e293b'
+          color_background: '#0f172a'
+          gif: false
 
-      - name: Push to GitHub
+      - name: Commit files
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add dist
+          git commit -m "update pacman contribution graph"
+        continue-on-error: true
+
+      - name: Push to GitHub Pages (output branch)
         uses: crazy-max/ghaction-github-pages@v3
         with:
           target_branch: output
-          build_dir: ./dist
+          build_dir: dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
